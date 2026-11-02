@@ -9,6 +9,9 @@ md = ["# Dynasty talk: narration", "",
 for i, slide in enumerate(Presentation(deck).slides, 1):
     title = next((sh.text_frame.text.replace("\n", " ") for sh in slide.placeholders
                   if sh.placeholder_format.type == PP_PLACEHOLDER.TITLE), "")
+    if not title:  # slides added by hand may carry their heading in a plain text box
+        title = next((sh.text_frame.text.strip() for sh in slide.shapes
+                      if sh.has_text_frame and sh.text_frame.text.strip()), "")
     notes = slide.notes_slide.notes_text_frame.text if slide.has_notes_slide else ""
     md += ["", f"## {i}. {title}", "", notes.strip()]
 open(out, "w").write("\n".join(md) + "\n")
